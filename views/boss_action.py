@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QDialog, QVBoxLayout, QLineEdit, QPushButton, QMessageBox
-import pymysql
+import pymysql,time
 from PyQt5.QtWidgets import QApplication, QMainWindow,QWidget,QTextEdit,QHBoxLayout
 from PyQt5.QtWidgets import QTableWidget,QTableWidgetItem,QTableWidgetItem, QScrollArea
 from PyQt5.QtWidgets import QFormLayout,QLabel,QComboBox
@@ -30,7 +30,7 @@ class win_boss(QDialog):
 
         btn_get_worker = QPushButton("确认")
         btn_get_worker.setFixedHeight(40)
-        btn_get_worker.clicked.connect(lambda:self.get_work(area_get_worker.toPlainText()))#窗口的构建
+        btn_get_worker.clicked.connect(lambda: self.get_work(area_get_worker.toPlainText()) if area_get_worker.toPlainText() else QMessageBox.warning(self, '警告', '数据空'))#窗口的构建
 
         area_get_layout.addStretch()
         area_get_layout.addWidget(area_get_worker)
@@ -55,7 +55,10 @@ class win_boss(QDialog):
         area_table.addWidget(btn_done)
 
         btn_back = QPushButton("返回登录")
-        btn_back.clicked.connect(lambda: self.close())
+        btn_back.clicked.connect(lambda:self.close())
+        time.sleep(0.5)
+        btn_back.clicked.connect(lambda:self.close())
+      #  btn_back.clicked.connect(lambda:self.close())
 
         layout.addWidget(title_mian)
         layout.addLayout(area_get_layout)
@@ -64,7 +67,7 @@ class win_boss(QDialog):
 
         self.setLayout(layout)
    #加载数据
-
+    
     def get_work(self,name):
         self.hide()
 

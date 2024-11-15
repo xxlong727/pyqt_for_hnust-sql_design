@@ -39,7 +39,7 @@ class win_work(QDialog):
         roll_area = QScrollArea()
        
         widget_data = QWidget()#创建信息容器
-        widget_data.resize(900,1000)
+        widget_data.resize(900,900)
 
         data_layout = QFormLayout() 
 
@@ -52,6 +52,7 @@ class win_work(QDialog):
             line_list.append(text_area)#将每个文本栏存入列表
             data_layout.addRow(QLabel(data_p),text_area)
         line_list[0].setReadOnly(True)
+        line_list[2].setReadOnly(True)
 
         widget_data.setLayout(data_layout)
         roll_area.setWidget(widget_data)

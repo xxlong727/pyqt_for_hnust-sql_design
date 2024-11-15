@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QDialog, QLineEdit, QPushButton, QVBoxLayout, QLabel, QMessageBox
 from PyQt5.QtCore import Qt
-import sys
+import sys,time
 from PyQt5.QtWidgets import QTableWidget,QTableWidgetItem,QApplication
 import pymysql
 #员工登录
@@ -99,23 +99,41 @@ class LoginDialog_boss(QDialog):
 
     #boss登录
     def login(self):
-        from views.boss_action import win_boss
+        db_config = {
+            'host': 'localhost',       # 数据库主机地址
+            'user': 'root',           # 数据库用户名
+            'password': 'xxlong727',  # 数据库密码
+            'database': 'xsgl',       # 数据库名
+            'charset': 'utf8mb4',      # 字符编码
+        }
         username = self.usernameEdit.text()
         password = self.passwordEdit.text()
-        if username == "admin" and password == "admin":  # 假设这是正确的用户名和密码
-           # print(1243)
-            self.hide() # 登录成功，关闭对话框
-            boss_win = win_boss()
-            boss_win.show()
-           
-            if not boss_win.exec_():#不知道什么问题，会一直误判，加双重判断可解决
-                 #self.show()
-                if not boss_win.exec_():
-                    self.close()
-            
+        from views.boss_action import win_boss
+        # 连接到数据库
+        connection = pymysql.connect(**db_config)
+        try:
+            with connection.cursor() as cursor:
+                # 查询用户名和密码
+                sql = "SELECT authority FROM person WHERE name = %s AND passwd = %s"
+                cursor.execute(sql, (username, password))
+                result = cursor.fetchone()
+                
+                if result:
+                    authority = result[0]  # 权限存储在 'authority' 字段
+                    if authority == 1:
+                        self.hide()  # 登录成功，关闭对话框
+                        boss_win = win_boss()  # 创建 boss 窗口实例
+                        boss_win.show()
+                        if not boss_win.exec_() and not boss_win.exec():
+                            self.close()
+                    else:
+                        QMessageBox.warning(self, '登录失败', '权限不足')
+                else:
+                    QMessageBox.warning(self, '登录失败', '用户名或密码错误')
+        except pymysql.MySQLError as e:
+            QMessageBox.warning(self, '数据库错误', str(e))
+        finally:
+            connection.close()
 
-          #  
-        else:
-            QMessageBox.warning(self, '登录失败', '用户名或密码错误')
 
 
